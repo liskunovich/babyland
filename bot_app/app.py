@@ -1,3 +1,10 @@
+import os
+import sys
+sys.path.append(os.getcwd())
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "babyland.settings")
+django.setup()
+
 from utils.set_bot_commands import set_default_commands
 
 
@@ -13,6 +20,7 @@ async def on_startup(dp):
 
 
 if __name__ == '__main__':
+
     from aiogram import executor
     from handlers import dp
 
