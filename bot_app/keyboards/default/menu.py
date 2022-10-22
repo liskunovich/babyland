@@ -13,3 +13,4 @@ MAIN_MENU_KEYBOARD = ReplyKeyboardMarkup(
         ]
     ], resize_keyboard=True
 )
+
