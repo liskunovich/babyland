@@ -16,3 +16,8 @@ class OrderRequest(models.Model):
     end_time = models.TimeField()
     children_amount = models.PositiveIntegerField()
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='orders')
+
+
+class Day(models.Model):
+    day = models.CharField(max_length=255)
+    is_workday = models.BooleanField(default=True)
