@@ -1,5 +1,5 @@
 from aiogram import types
-from loader import dp
+from bot_app.loader import dp
 
 
 @dp.message_handler()

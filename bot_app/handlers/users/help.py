@@ -1,8 +1,8 @@
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandHelp
 
-from loader import dp
-from utils.misc import rate_limit
+from bot_app.loader import dp
+from bot_app.utils.misc import rate_limit
 
 
 @rate_limit(5, 'help')

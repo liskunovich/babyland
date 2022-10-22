@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 from bot_app.keyboards.default import start, menu
 from clients.models import Client
 from asgiref.sync import sync_to_async
-from loader import dp
+from bot_app.loader import dp
 
 
 @sync_to_async
