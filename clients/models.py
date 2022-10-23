@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Client(models.Model):
@@ -10,14 +11,23 @@ class Client(models.Model):
         return self.number
 
 
+class Day(models.Model):
+    date = models.DateField()
+    total_children = models.PositiveIntegerField(default=0, validators=[
+        MaxValueValidator(10),
+        MinValueValidator(1)
+    ])
+    day = models.CharField(max_length=255)
+    is_available = models.BooleanField(default=True)
+
+
 class OrderRequest(models.Model):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
-    children_amount = models.PositiveIntegerField()
+    children_amount = models.PositiveIntegerField(validators=[
+        MaxValueValidator(10),
+        MinValueValidator(1)
+    ])
+    day = models.ForeignKey(Day, on_delete=models.DO_NOTHING, related_name='orders')
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='orders')
-
-
-class Day(models.Model):
-    day = models.CharField(max_length=255)
-    is_workday = models.BooleanField(default=True)
