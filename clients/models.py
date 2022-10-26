@@ -12,22 +12,20 @@ class Client(models.Model):
 
 
 class Day(models.Model):
-    date = models.DateField()
-    total_children = models.PositiveIntegerField(default=0, validators=[
-        MaxValueValidator(10),
-        MinValueValidator(1)
-    ])
-    day = models.CharField(max_length=255)
+    date = models.DateField(null=True)
+    week_day = models.CharField(max_length=255)
     is_available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.date)
 
 
 class OrderRequest(models.Model):
-    date = models.DateField()
+    date = models.ForeignKey(Day, on_delete=models.DO_NOTHING, related_name='orders', null=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
     children_amount = models.PositiveIntegerField(validators=[
         MaxValueValidator(10),
         MinValueValidator(1)
     ])
-    day = models.ForeignKey(Day, on_delete=models.DO_NOTHING, related_name='orders')
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='orders')

@@ -16,4 +16,4 @@ class OrderRequestAdmin(admin.ModelAdmin):
 
 @admin.register(Day)
 class WeekAdmin(admin.ModelAdmin):
-    list_display = ["day", "is_available"]
+    list_display = [field.name for field in Day._meta.fields]
