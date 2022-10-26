@@ -4,15 +4,17 @@ from clients.models import Day
 
 
 class Filler:
-    WEEK = {
-        0: "Понедельник",
-        1: "Вторник",
-        2: "Среда",
-        3: "Четверг",
-        4: "Пятница",
-        5: "Суббота",
-        6: "Воскресенье"
-    }
+    WEEK = [
+        "Понедельник",
+        "Вторник",
+        "Среда",
+        "Четверг",
+        "Пятница",
+        "Суббота",
+        "Воскресенье"
+    ]
+
+    WEEKEND = ("Воскресенье", "Понедельник")
 
     def __init__(self):
         self.month = datetime.datetime.now().date().month
@@ -22,9 +24,11 @@ class Filler:
     def fill_db(self):
         days = [datetime.date(self.year, self.month, day) for day in range(1, self.num_days + 1)]
         for month_day in days:
+            week_day = self.WEEK[datetime.datetime.weekday(month_day)]
             day_instance = Day(
                 date=month_day,
-                day=self.WEEK[datetime.datetime.weekday(month_day)]
+                week_day=week_day,
+                is_available=True if week_day not in self.WEEKEND else False
             )
             day_instance.save()
 
