@@ -9,21 +9,34 @@ from bot_app.loader import dp
 from clients.models import Client, OrderRequest, Day
 from aiogram.dispatcher.filters.builtin import Text
 from bot_app.keyboards.inline.order import get_date_keyboard, get_children_amount_keyboard, get_time_keyboard, \
-    date_callback_data, time_callback_data, \
-    children_amount_callback_data
+    order_callback_data
+
+from django.db.models import Count, Sum
+
+
+@sync_to_async
+def is_free(time: str, date: str):
+    orders = OrderRequest.objects.filter(date=Day.objects.get(date=date))
+    print(orders)
 
 
 @sync_to_async
 def write_to_db(*args):
-    print(args)
-    order = OrderRequest(
+    order, created = OrderRequest.objects.get_or_create(
         start_time=args[0].split("-")[0].strip(),
         end_time=args[0].split("-")[1].strip(),
         date=Day.objects.get(date=args[1]),
-        children_amount=args[2],
-        client=Client.objects.get(telegram_id=args[3])
     )
-    order.save()
+    if not created:
+        order.children_amount += int(args[2])
+        order.save()
+    else:
+        start_time = args[0].split("-")[0].strip(),
+        end_time = args[0].split("-")[1].strip(),
+        date = Day.objects.get(date=args[1]),
+        children_amount = args[2],
+        client = Client.objects.get(telegram_id=args[3])
+        order.save()
 
 
 @dp.message_handler(Text(equals="Записать ребёнка"))
@@ -38,7 +51,7 @@ async def choose_day(message: types.Message):
                              reply_markup=keyboard)
 
 
-@dp.callback_query_handler(date_callback_data.filter())
+@dp.callback_query_handler(order_callback_data.filter(action="set_date"))
 async def choose_time(call: CallbackQuery, callback_data: dict):
     order_date = callback_data.get("date")
     await call.answer()
@@ -48,7 +61,7 @@ async def choose_time(call: CallbackQuery, callback_data: dict):
     )
 
 
-@dp.callback_query_handler(time_callback_data.filter())
+@dp.callback_query_handler(order_callback_data.filter(action="set_time"))
 async def make_order(call: CallbackQuery, callback_data: dict):
     order_time = callback_data.get("time")
     order_date = callback_data.get("date")
@@ -59,10 +72,15 @@ async def make_order(call: CallbackQuery, callback_data: dict):
     )
 
 
-@dp.callback_query_handler(children_amount_callback_data.filter())
+@dp.callback_query_handler(order_callback_data.filter(action="choose_children"))
 async def choose_children_amount(call: CallbackQuery, callback_data: dict):
     order_time = callback_data.get("time")
     order_date = callback_data.get("date")
     children_amount = callback_data.get("children_amount")
     client = call.from_user["id"]
+    await is_free(order_time, order_date)
     await write_to_db(order_time, order_date, children_amount, client)
+    await call.answer()
+    await call.message.edit_text(
+        text=f"Вы успешно записались на {order_time}"
+    )
