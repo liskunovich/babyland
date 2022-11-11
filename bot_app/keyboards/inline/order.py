@@ -8,7 +8,6 @@ from django.utils import timezone
 
 from clients.models import Day
 
-
 order_callback_data = CallbackData('order', 'action', 'date', 'time', 'children_amount', sep='!')
 
 
@@ -65,7 +64,7 @@ def get_children_amount_keyboard(date, time):
     buttons = [InlineKeyboardButton(
         text=str(i + 1),
         callback_data=order_callback_data.new(
-            action='choose_children',
+            action='set_children',
             date=date,
             time=time,
             children_amount=i + 1
@@ -74,3 +73,20 @@ def get_children_amount_keyboard(date, time):
     for i in range(len(buttons)):
         keyboard.insert(buttons[i])
     return keyboard
+
+
+@sync_to_async
+def get_cancel_keyboard(date, time, children_amount):
+    keyboard = InlineKeyboardMarkup(row_width=1)
+    button = InlineKeyboardButton(
+                text="Отменить запись",
+                callback_data=order_callback_data.new(
+                    action='cancel_order',
+                    date=date,
+                    time=time,
+                    children_amount=children_amount
+                )
+            )
+    keyboard.insert(button)
+    return keyboard
+
