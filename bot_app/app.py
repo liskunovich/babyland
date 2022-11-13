@@ -3,6 +3,7 @@ import sys
 sys.path.append(os.getcwd())
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "babyland.settings")
+os.environ.update({"DJANGO_ALLOW_ASYNC_UNSAFE": "true"})
 django.setup()
 
 from utils.set_bot_commands import set_default_commands
