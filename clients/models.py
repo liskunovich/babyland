@@ -21,11 +21,11 @@ class Day(models.Model):
 
 
 class OrderRequest(models.Model):
-    date = models.ForeignKey(Day, on_delete=models.DO_NOTHING, related_name='orders', null=True)
+    date = models.ForeignKey(Day, on_delete=models.SET_NULL, related_name='orders', null=True)
     start_time = models.TimeField()
     end_time = models.TimeField()
     children_amount = models.PositiveIntegerField(validators=[
         MaxValueValidator(10),
         MinValueValidator(1)
     ])
-    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='orders')
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, related_name='orders', null=True)
